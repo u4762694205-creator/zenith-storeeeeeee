@@ -10,7 +10,7 @@
    tout le monde peut LIRE, seul ton compte staff connecté peut ÉCRIRE.
    ========================================================================== */
 
-const SUPABASE_URL = "https://dolqsmviidmdfbymmljb.supabase.co";
+const SUPABASE_URL = "https://fyugbxlhqvdusfdptzvf.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_HzNCjCsb6B6pClNa_yENtA_fUJrc9NK";
 
 const supabaseClient = (SUPABASE_URL.includes("TON-PROJET"))
