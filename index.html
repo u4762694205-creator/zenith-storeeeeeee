@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zenith Store — Produits &amp; services numériques</title>
+<meta name="description" content="Découvre nos produits numériques et commande en un ticket Discord.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ==================== LOADER ==================== -->
+<div id="loader" class="loader">
+  <div class="loader-orb"></div>
+  <p class="loader-text">ZENITH</p>
+</div>
+
+<!-- ==================== CIEL ÉTOILÉ (fond) ==================== -->
+<canvas id="starfield"></canvas>
+<div class="horizon-glow" aria-hidden="true"></div>
+
+<!-- ==================== NAVBAR ==================== -->
+<header class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark" id="logoMark"><i class="fa-solid fa-bolt"></i></span>
+      <span class="logo-text" id="logoText">Zenith<span>Store</span></span>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#hero" class="nav-link active" data-i18n="nav_home">Accueil</a>
+      <a href="#produits" class="nav-link" data-i18n="nav_products">Produits</a>
+      <a href="#faq" class="nav-link" data-i18n="nav_faq">FAQ</a>
+      <a href="#" class="nav-link discord-link" target="_blank" rel="noopener" data-i18n="nav_discord">Discord</a>
+    </nav>
+
+    <div class="navbar-actions">
+      <div class="lang-switch" id="langSwitch">
+        <button class="lang-btn" id="langToggle" aria-haspopup="true" aria-expanded="false">
+          <i class="fa-solid fa-globe"></i> <span id="langCurrent">FR</span>
+        </button>
+        <div class="lang-menu" id="langMenu"></div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="openAuthBtn" data-i18n="nav_login">Connexion</button>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== MENU MOBILE ==================== -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#hero" class="mobile-link" data-i18n="nav_home">Accueil</a>
+  <a href="#produits" class="mobile-link" data-i18n="nav_products">Produits</a>
+  <a href="#faq" class="mobile-link" data-i18n="nav_faq">FAQ</a>
+  <a href="#" class="mobile-link discord-link" target="_blank" rel="noopener" data-i18n="nav_discord">Discord</a>
+  <div class="mobile-lang" id="mobileLang"></div>
+  <button class="btn btn-primary btn-block" id="openAuthBtnMobile" data-i18n="nav_login">Connexion</button>
+</div>
+
+<main>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <div class="hero-content reveal">
+        <span class="eyebrow"><i class="fa-solid fa-circle-notch fa-spin"></i> <span id="heroEyebrow" data-i18n-skip>Livraison rapide</span></span>
+        <h1 class="hero-title" id="heroTitle">
+          Bienvenue sur <span class="gradient-text">Zenith Store</span>
+        </h1>
+        <p class="hero-subtitle" id="heroSubtitle">
+          Des comptes premium et services numériques à prix avantageux.
+        </p>
+        <div class="hero-actions">
+          <a href="#produits" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-bag-shopping"></i> <span data-i18n="hero_cta_products">Voir les produits</span>
+          </a>
+          <a href="#" class="btn btn-ghost btn-lg discord-link" target="_blank" rel="noopener">
+            <i class="fa-brands fa-discord"></i> <span data-i18n="hero_cta_discord">Rejoindre le Discord</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal">
+        <!-- Constellation : élément signature du design "night sky" -->
+        <svg class="constellation" viewBox="0 0 400 400" aria-hidden="true">
+          <g class="constellation-lines" stroke="url(#lineGradient)" stroke-width="1" fill="none">
+            <line x1="200" y1="200" x2="200" y2="70"></line>
+            <line x1="200" y1="200" x2="320" y2="140"></line>
+            <line x1="200" y1="200" x2="330" y2="270"></line>
+            <line x1="200" y1="200" x2="200" y2="330"></line>
+            <line x1="200" y1="200" x2="75" y2="265"></line>
+            <line x1="200" y1="200" x2="70" y2="135"></line>
+          </g>
+          <defs>
+            <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--violet)" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="var(--pink)" stop-opacity="0.15"/>
+            </linearGradient>
+          </defs>
+          <circle class="constellation-core" cx="200" cy="200" r="30"></circle>
+          <g class="constellation-nodes">
+            <circle class="node" cx="200" cy="70" r="9"></circle>
+            <circle class="node" cx="320" cy="140" r="7"></circle>
+            <circle class="node" cx="330" cy="270" r="7"></circle>
+            <circle class="node" cx="200" cy="330" r="9"></circle>
+            <circle class="node" cx="75" cy="265" r="7"></circle>
+            <circle class="node" cx="70" cy="135" r="7"></circle>
+          </g>
+        </svg>
+        <div class="constellation-icon" style="--x:200px; --y:70px;"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="constellation-icon" style="--x:320px; --y:140px;"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="constellation-icon" style="--x:330px; --y:270px;"><i class="fa-solid fa-cloud"></i></div>
+        <div class="constellation-icon" style="--x:200px; --y:330px;"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="constellation-icon" style="--x:75px; --y:265px;"><i class="fa-solid fa-lock"></i></div>
+        <div class="constellation-icon" style="--x:70px; --y:135px;"><i class="fa-solid fa-music"></i></div>
+        <div class="constellation-core-icon"><i class="fa-solid fa-bolt"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== STATISTIQUES ==================== -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <i class="fa-solid fa-box-open stat-icon"></i>
+        <span class="stat-number" id="statSold" data-target="14382">0</span>
+        <span class="stat-label" data-i18n="stat_sold">Produits vendus</span>
+      </div>
+      <div class="stat-card reveal">
+        <i class="fa-solid fa-face-smile stat-icon"></i>
+        <span class="stat-number" id="statClients" data-target="3927">0</span>
+        <span class="stat-label" data-i18n="stat_clients">Clients satisfaits</span>
+      </div>
+      <div class="stat-card reveal">
+        <i class="fa-solid fa-bolt stat-icon"></i>
+        <span class="stat-number" id="statDelivery" data-target="24" data-suffix="h">0</span>
+        <span class="stat-label" data-i18n="stat_delivery">Livraison sous</span>
+      </div>
+      <div class="stat-card reveal">
+        <i class="fa-solid fa-server stat-icon"></i>
+        <span class="stat-number" id="statUptime" data-target="99.9" data-suffix="%" data-decimals="1">0</span>
+        <span class="stat-label" data-i18n="stat_uptime">Disponibilité</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== POURQUOI NOUS CHOISIR ==================== -->
+  <section class="why">
+    <div class="section-header reveal">
+      <h2 class="section-title" data-i18n="why_title">Pourquoi nous choisir&nbsp;?</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <div class="why-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+        <h3 data-i18n="why_1_title">Livraison rapide</h3>
+        <p data-i18n="why_1_text">Ton accès est préparé et transmis rapidement après ta commande sur Discord.</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="why-icon"><i class="fa-solid fa-headset"></i></div>
+        <h3 data-i18n="why_2_title">Support disponible</h3>
+        <p data-i18n="why_2_text">Une équipe réactive sur Discord pour répondre à toutes tes questions.</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="why-icon"><i class="fa-solid fa-tags"></i></div>
+        <h3 data-i18n="why_3_title">Prix avantageux</h3>
+        <p data-i18n="why_3_text">Des tarifs pensés pour rester accessibles, sans sacrifier la qualité.</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="why-icon"><i class="fa-solid fa-ticket-simple"></i></div>
+        <h3 data-i18n="why_4_title">Commande simple</h3>
+        <p data-i18n="why_4_text">Un ticket Discord suffit : pas de compte bancaire à saisir sur le site.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PRODUITS ==================== -->
+  <section class="products" id="produits">
+    <div class="section-header reveal">
+      <span class="section-eyebrow" data-i18n="products_eyebrow">Catalogue</span>
+      <h2 class="section-title" data-i18n="products_title">Nos produits</h2>
+      <p class="section-subtitle" data-i18n="products_subtitle">Parcours la sélection, puis rejoins le Discord pour commander.</p>
+    </div>
+
+    <div class="ticket-banner reveal">
+      <i class="fa-solid fa-ticket-simple"></i>
+      <p data-i18n="ticket_banner">Ce site présente nos produits — la commande et le paiement se font uniquement sur Discord, via un ticket.</p>
+      <a href="#" class="btn btn-primary btn-sm discord-link" target="_blank" rel="noopener">
+        <i class="fa-brands fa-discord"></i> <span data-i18n="ticket_banner_cta">Ouvrir un ticket</span>
+      </a>
+    </div>
+
+    <div class="products-toolbar reveal">
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Rechercher un produit...">
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="all" data-i18n="filter_all">Tous</button>
+        <button class="filter-btn" data-filter="streaming" data-i18n="filter_streaming">Streaming</button>
+        <button class="filter-btn" data-filter="vpn" data-i18n="filter_vpn">VPN</button>
+        <button class="filter-btn" data-filter="software" data-i18n="filter_software">Logiciels</button>
+        <button class="filter-btn" data-filter="accounts" data-i18n="filter_accounts">Comptes</button>
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid"></div>
+
+    <p class="no-results" id="noResults" hidden>
+      <i class="fa-solid fa-box-open"></i> <span data-i18n="no_results">Aucun produit ne correspond à ta recherche.</span>
+    </p>
+  </section>
+
+  <!-- ==================== AVIS ==================== -->
+  <section class="reviews" id="avis">
+    <div class="section-header reveal">
+      <span class="section-eyebrow" data-i18n="reviews_eyebrow">Témoignages</span>
+      <h2 class="section-title" data-i18n="reviews_title">Ce que disent nos clients</h2>
+    </div>
+
+    <div class="reviews-empty reveal">
+      <i class="fa-regular fa-comment-dots"></i>
+      <h3 data-i18n="reviews_empty_title">Pas encore d'avis</h3>
+      <p data-i18n="reviews_empty_text">Les premiers avis de vrais clients s'afficheront ici dès qu'ils seront disponibles.</p>
+      <a href="#" class="btn btn-ghost discord-link" target="_blank" rel="noopener">
+        <i class="fa-brands fa-discord"></i> <span data-i18n="reviews_empty_cta">Laisser un avis sur Discord</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ==================== FAQ ==================== -->
+  <section class="faq" id="faq">
+    <div class="section-header reveal">
+      <span class="section-eyebrow" data-i18n="faq_eyebrow">Questions fréquentes</span>
+      <h2 class="section-title" data-i18n="faq_title">FAQ</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span data-i18n="faq_q1">Comment recevoir mon produit&nbsp;?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer"><p data-i18n="faq_a1">Rejoins notre Discord et ouvre un ticket.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span data-i18n="faq_q2">Quels moyens de paiement acceptez-vous&nbsp;?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer"><p data-i18n="faq_a2">Indiqués dans le ticket Discord.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span data-i18n="faq_q3">Le support est-il disponible&nbsp;?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer"><p data-i18n="faq_a3">Oui, tous les jours sur Discord.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question">
+          <span data-i18n="faq_q4">Puis-je payer directement sur le site&nbsp;?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer"><p data-i18n="faq_a4">Non, tout se passe via un ticket Discord.</p></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <span class="logo-mark"><i class="fa-solid fa-bolt"></i></span>
+        <span class="logo-text" id="logoTextFooter">Zenith<span>Store</span></span>
+      </a>
+      <p data-i18n="footer_tagline">Produits et services numériques, présentés ici, commandés sur Discord.</p>
+    </div>
+
+    <div class="footer-links">
+      <a href="#" class="discord-link" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> <span data-i18n="footer_discord">Discord</span></a>
+      <a href="#" data-i18n="footer_contact">Contact</a>
+      <a href="#" data-i18n="footer_terms">Conditions d'utilisation</a>
+      <a href="#" data-i18n="footer_privacy">Politique de confidentialité</a>
+      <button type="button" id="staffLink" class="footer-staff-link"><i class="fa-solid fa-user-shield"></i> <span data-i18n="footer_staff">Espace Staff</span></button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; <span id="year"></span> <span id="footerSiteName">Zenith Store</span>. <span data-i18n="footer_rights">Tous droits réservés.</span></p>
+  </div>
+</footer>
+
+<a href="#" class="floating-discord discord-link" target="_blank" rel="noopener" aria-label="Rejoindre le Discord">
+  <i class="fa-brands fa-discord"></i>
+</a>
+
+<button id="backToTop" class="back-to-top" aria-label="Retour en haut">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<!-- ==================== MODALE CONNEXION / INSCRIPTION ==================== -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-modal">
+    <button class="auth-close" id="authClose" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    <div class="auth-header">
+      <span class="logo-mark"><i class="fa-solid fa-bolt"></i></span>
+      <h2 id="authTitle" data-i18n="auth_login_title">Connexion</h2>
+      <p id="authSubtitle" data-i18n="auth_login_subtitle">Accède à ton compte Zenith Store.</p>
+    </div>
+    <div class="auth-social">
+      <button class="btn btn-social btn-google" type="button">
+        <i class="fa-brands fa-google"></i> <span data-i18n="auth_google">Continuer avec Google</span>
+      </button>
+      <button class="btn btn-social btn-discord" type="button">
+        <i class="fa-brands fa-discord"></i> <span data-i18n="auth_discord">Continuer avec Discord</span>
+      </button>
+    </div>
+    <div class="auth-divider"><span data-i18n="auth_or">ou</span></div>
+    <form class="auth-form" id="authForm">
+      <label class="auth-label" for="authEmail" data-i18n="auth_email">Adresse e-mail</label>
+      <div class="auth-input">
+        <i class="fa-solid fa-envelope"></i>
+        <input type="email" id="authEmail" placeholder="toi@exemple.com" required>
+      </div>
+      <label class="auth-label" for="authPassword" data-i18n="auth_password">Mot de passe</label>
+      <div class="auth-input">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="authPassword" placeholder="••••••••" minlength="6" required>
+        <button type="button" class="auth-toggle-pass" id="authTogglePass" aria-label="Afficher le mot de passe"><i class="fa-solid fa-eye"></i></button>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="authSubmit" data-i18n="auth_submit_login">Se connecter</button>
+    </form>
+    <p class="auth-switch">
+      <span id="authSwitchText" data-i18n="auth_switch_to_signup">Pas encore de compte ?</span>
+      <button type="button" id="authSwitchBtn" data-i18n="auth_switch_to_signup_btn">Créer un compte</button>
+    </p>
+  </div>
+</div>
+
+<!-- ==================== ACCÈS STAFF ==================== -->
+<div class="auth-overlay" id="staffGateOverlay">
+  <div class="auth-modal">
+    <button class="auth-close" id="staffGateClose" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    <div class="auth-header">
+      <span class="logo-mark"><i class="fa-solid fa-user-shield"></i></span>
+      <h2>Espace Staff</h2>
+      <p>Accès réservé — connecte-toi avec ton compte staff.</p>
+    </div>
+    <form class="auth-form" id="staffGateForm">
+      <label class="auth-label" for="staffPasswordInput">Mot de passe</label>
+      <div class="auth-input">
+        <i class="fa-solid fa-key"></i>
+        <input type="password" id="staffPasswordInput" placeholder="••••••••" required>
+      </div>
+      <p class="auth-error" id="staffGateError" hidden>Mot de passe incorrect.</p>
+      <button type="submit" class="btn btn-primary btn-block">Accéder au panneau</button>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== PANNEAU STAFF ==================== -->
+<div class="staff-panel" id="staffPanel">
+  <div class="staff-panel-inner">
+
+    <aside class="staff-sidebar">
+      <div class="staff-brand">
+        <span class="logo-mark"><i class="fa-solid fa-user-shield"></i></span>
+        <span>Panneau Staff</span>
+      </div>
+      <nav class="staff-tabs">
+        <button class="staff-tab active" data-tab="produits"><i class="fa-solid fa-box"></i> Produits</button>
+        <button class="staff-tab" data-tab="apparence"><i class="fa-solid fa-palette"></i> Apparence</button>
+        <button class="staff-tab" data-tab="general"><i class="fa-solid fa-sliders"></i> Général</button>
+        <button class="staff-tab" data-tab="sauvegarde"><i class="fa-solid fa-floppy-disk"></i> Sauvegarde</button>
+      </nav>
+      <div class="staff-sidebar-footer">
+        <a href="index.html" class="btn btn-ghost btn-sm btn-block"><i class="fa-solid fa-eye"></i> Voir le site</a>
+        <button class="btn btn-outline btn-sm btn-block" id="staffLogout"><i class="fa-solid fa-right-from-bracket"></i> Quitter</button>
+      </div>
+    </aside>
+
+    <div class="staff-content">
+
+      <!-- ---- PRODUITS ---- -->
+      <section class="staff-view active" id="view-produits">
+        <div class="staff-view-header">
+          <h2>Produits</h2>
+          <button class="btn btn-primary btn-sm" id="addProductBtn"><i class="fa-solid fa-plus"></i> Ajouter un produit</button>
+        </div>
+        <div class="staff-table-wrap">
+          <table class="staff-table" id="staffProductsTable">
+            <thead>
+              <tr><th></th><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Badge</th><th></th></tr>
+            </thead>
+            <tbody id="staffProductsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ---- APPARENCE ---- -->
+      <section class="staff-view" id="view-apparence">
+        <div class="staff-view-header"><h2>Apparence</h2></div>
+        <div class="staff-form-grid">
+          <div class="staff-field">
+            <label>Couleur violette</label>
+            <div class="color-field"><input type="color" id="colorViolet"><input type="text" id="colorVioletHex" class="hex-input"></div>
+          </div>
+          <div class="staff-field">
+            <label>Couleur rose (alpenglow)</label>
+            <div class="color-field"><input type="color" id="colorPink"><input type="text" id="colorPinkHex" class="hex-input"></div>
+          </div>
+          <div class="staff-field">
+            <label>Couleur ambre (accent)</label>
+            <div class="color-field"><input type="color" id="colorAmber"><input type="text" id="colorAmberHex" class="hex-input"></div>
+          </div>
+          <div class="staff-field">
+            <label>Fond (ciel nocturne)</label>
+            <div class="color-field"><input type="color" id="colorBg"><input type="text" id="colorBgHex" class="hex-input"></div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" id="resetThemeBtn"><i class="fa-solid fa-rotate-left"></i> Réinitialiser les couleurs</button>
+      </section>
+
+      <!-- ---- GÉNÉRAL ---- -->
+      <section class="staff-view" id="view-general">
+        <div class="staff-view-header"><h2>Général</h2></div>
+        <div class="staff-form-grid staff-form-grid-1">
+          <div class="staff-field">
+            <label>Nom du site</label>
+            <input type="text" id="gSiteName">
+          </div>
+          <div class="staff-field">
+            <label>Titre du hero (le nom du site s'affiche automatiquement en dégradé)</label>
+            <input type="text" id="gHeroTitle">
+          </div>
+          <div class="staff-field">
+            <label>Sous-titre du hero</label>
+            <textarea id="gHeroSubtitle" rows="2"></textarea>
+          </div>
+          <div class="staff-field">
+            <label>Texte au-dessus du titre (eyebrow)</label>
+            <input type="text" id="gHeroEyebrow">
+          </div>
+          <div class="staff-field">
+            <label>Lien d'invitation Discord</label>
+            <input type="text" id="gDiscordLink">
+          </div>
+          <div class="staff-field staff-field-row">
+            <div>
+              <label>Produits vendus (stat)</label>
+              <input type="number" id="gStatSold">
+            </div>
+            <div>
+              <label>Clients satisfaits (stat)</label>
+              <input type="number" id="gStatClients">
+            </div>
+          </div>
+          <div class="staff-field staff-field-row">
+            <div>
+              <label>Livraison sous (heures)</label>
+              <input type="number" id="gStatDelivery">
+            </div>
+            <div>
+              <label>Disponibilité (%)</label>
+              <input type="number" step="0.1" id="gStatUptime">
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="saveGeneralBtn"><i class="fa-solid fa-check"></i> Enregistrer</button>
+      </section>
+
+      <!-- ---- SAUVEGARDE ---- -->
+      <section class="staff-view" id="view-sauvegarde">
+        <div class="staff-view-header"><h2>Sauvegarde &amp; publication</h2></div>
+
+        <div class="staff-notice">
+          <i class="fa-solid fa-circle-info"></i>
+          <p>Tes modifications sont enregistrées <strong>en direct dans la base de données</strong> et visibles immédiatement par tous les visiteurs du site, sur n'importe quel appareil.</p>
+        </div>
+
+        <div class="staff-actions-grid">
+          <button class="btn btn-primary" id="exportBtn"><i class="fa-solid fa-download"></i> Exporter la configuration</button>
+          <label class="btn btn-ghost" for="importInput"><i class="fa-solid fa-upload"></i> Importer une configuration
+            <input type="file" id="importInput" accept="application/json" hidden>
+          </label>
+          <button class="btn btn-outline" id="resetAllBtn"><i class="fa-solid fa-triangle-exclamation"></i> Tout réinitialiser</button>
+        </div>
+
+        <div class="staff-field" style="margin-top:2rem;">
+          <label>Changer mon mot de passe staff</label>
+          <div class="auth-input" style="max-width:320px;">
+            <i class="fa-solid fa-key"></i>
+            <input type="text" id="gStaffPassword">
+          </div>
+          <button class="btn btn-outline btn-sm" id="savePasswordBtn" style="margin-top:0.8rem;"><i class="fa-solid fa-check"></i> Mettre à jour le mot de passe</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ---- Formulaire produit (modale) ---- -->
+<div class="auth-overlay" id="productModalOverlay">
+  <div class="auth-modal product-modal">
+    <button class="auth-close" id="productModalClose" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    <div class="auth-header"><h2 id="productModalTitle">Ajouter un produit</h2></div>
+    <form class="auth-form" id="productForm">
+      <div class="staff-field">
+        <label>Nom</label>
+        <input type="text" id="pName" required>
+      </div>
+      <div class="staff-field">
+        <label>Description</label>
+        <textarea id="pDescription" rows="2" required></textarea>
+      </div>
+      <div class="staff-field-row">
+        <div class="staff-field">
+          <label>Prix (€)</label>
+          <input type="number" step="0.01" id="pPrice" required>
+        </div>
+        <div class="staff-field">
+          <label>Catégorie</label>
+          <select id="pCategory">
+            <option value="streaming">Streaming</option>
+            <option value="vpn">VPN</option>
+            <option value="software">Logiciels</option>
+            <option value="accounts">Comptes</option>
+          </select>
+        </div>
+      </div>
+      <div class="staff-field-row">
+        <div class="staff-field">
+          <label>Icône (Font Awesome)</label>
+          <input type="text" id="pIcon" placeholder="fa-solid fa-bolt">
+        </div>
+        <div class="staff-field">
+          <label>Badge</label>
+          <select id="pBadge">
+            <option value="">Aucun</option>
+            <option value="new">Nouveau</option>
+            <option value="promo">Promo</option>
+          </select>
+        </div>
+      </div>
+      <div class="staff-field">
+        <label>Image (URL, optionnel — sinon l'icône est utilisée)</label>
+        <input type="text" id="pImageUrl" placeholder="https://...">
+      </div>
+      <div class="staff-field">
+        <label>Ou importer une image depuis ton ordinateur</label>
+        <input type="file" id="pImageFile" accept="image/*">
+      </div>
+      <div class="staff-field staff-field-checkbox">
+        <label><input type="checkbox" id="pInStock" checked> En stock</label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-check"></i> Enregistrer le produit</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-config.js"></script>
+<script src="data-layer.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
