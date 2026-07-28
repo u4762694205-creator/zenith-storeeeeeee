@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   staffLink.addEventListener('click', async () => {
     const session = await DataLayer.getSession();
-    if (session) { openStaffPanel(); } else {
+    if (session && await DataLayer.isStaff()) { openStaffPanel(); }
+    else {
       staffGateOverlay.classList.add('open');
       staffEmailInput.focus();
     }
@@ -63,6 +64,13 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.textContent = 'Connexion...';
     try {
       await DataLayer.staffLogin(staffEmailInput.value.trim(), staffPasswordInput.value);
+      const isStaff = await DataLayer.isStaff();
+      if (!isStaff) {
+        await DataLayer.staffLogout();
+        staffGateError.textContent = "Ce compte n'a pas les droits staff.";
+        staffGateError.hidden = false;
+        return;
+      }
       staffGateOverlay.classList.remove('open');
       staffPasswordInput.value = '';
       openStaffPanel();
@@ -203,19 +211,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const pImageUrl = document.getElementById('pImageUrl');
   const pImageFile = document.getElementById('pImageFile');
   const pInStock = document.getElementById('pInStock');
-  let pendingImageData = null;
+  let pendingImageFile = null;
 
   function openProductModal(product) {
-    pendingImageData = null;
+    pendingImageFile = null;
     if (product) {
       editingProductId = product.id;
       productModalTitle.textContent = 'Modifier le produit';
       pName.value = product.name; pDescription.value = product.description;
       pPrice.value = product.price; pCategory.value = product.category;
       pIcon.value = product.icon || ''; pBadge.value = product.badge || '';
-      pImageUrl.value = product.image && !product.image.startsWith('data:') ? product.image : '';
+      pImageUrl.value = product.image || '';
       pInStock.checked = product.inStock;
-      pendingImageData = product.image && product.image.startsWith('data:') ? product.image : null;
     } else {
       editingProductId = null;
       productModalTitle.textContent = 'Ajouter un produit';
@@ -234,32 +241,42 @@ document.addEventListener('DOMContentLoaded', () => {
   pImageFile.addEventListener('change', () => {
     const file = pImageFile.files[0];
     if (!file) return;
-    if (file.size > 900 * 1024) {
-      alert("Image trop lourde pour être stockée en base (limite ~900 Ko). Utilise plutôt un lien d'image (URL) hébergée ailleurs.");
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image trop lourde (limite 5 Mo). Choisis une image plus légère.");
       pImageFile.value = ''; return;
     }
-    const reader = new FileReader();
-    reader.onload = () => { pendingImageData = reader.result; pImageUrl.value = ''; };
-    reader.readAsDataURL(file);
+    pendingImageFile = file;
+    pImageUrl.value = '';
   });
 
   productForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const image = pendingImageData || pImageUrl.value.trim() || null;
-    const productData = mapProductToDb({
-      name: pName.value.trim(),
-      description: pDescription.value.trim(),
-      price: parseFloat(pPrice.value) || 0,
-      category: pCategory.value,
-      icon: pIcon.value.trim() || 'fa-solid fa-box',
-      badge: pBadge.value || null,
-      image,
-      inStock: pInStock.checked
-    });
-
     const submitBtn = productForm.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
+    const originalLabel = submitBtn.innerHTML;
+
     try {
+      let image = pImageUrl.value.trim() || null;
+      if (pendingImageFile) {
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Envoi de l\'image...';
+        image = await DataLayer.uploadProductImage(pendingImageFile);
+      } else if (editingProductId && !image) {
+        // Aucune nouvelle image fournie en modification : on garde l'actuelle
+        const current = staffProducts.find(p => p.id === editingProductId);
+        image = current ? current.image : null;
+      }
+
+      const productData = mapProductToDb({
+        name: pName.value.trim(),
+        description: pDescription.value.trim(),
+        price: parseFloat(pPrice.value) || 0,
+        category: pCategory.value,
+        icon: pIcon.value.trim() || 'fa-solid fa-box',
+        badge: pBadge.value || null,
+        image,
+        inStock: pInStock.checked
+      });
+
       if (editingProductId) await DataLayer.updateProduct(editingProductId, productData);
       else await DataLayer.addProduct(productData);
       closeProductModal();
@@ -268,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
       toast("Erreur : " + err.message, true);
     } finally {
       submitBtn.disabled = false;
+      submitBtn.innerHTML = originalLabel;
     }
   });
 

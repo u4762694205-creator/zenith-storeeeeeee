@@ -74,6 +74,52 @@ const DataLayer = {
   async changeStaffPassword(newPassword) {
     const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
     if (error) throw error;
+  },
+
+  /* ---------- Distingue un compte staff d'un compte client classique ---------- */
+  async isStaff() {
+    const session = await this.getSession();
+    if (!session) return false;
+    const { data, error } = await supabaseClient
+      .from('staff_members')
+      .select('user_id')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+    if (error) { console.error(error); return false; }
+    return !!data;
+  },
+
+  /* ---------- Connexion cliente (vrais comptes : e-mail, Google, Discord) ---------- */
+  async customerSignUp(email, password) {
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) throw error;
+    return data;
+  },
+  async customerSignIn(email, password) {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
+  },
+  async signInWithProvider(provider) {
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  /* ---------- Upload d'une vraie image produit (Supabase Storage) ---------- */
+  async uploadProductImage(file) {
+    const ext = file.name.split('.').pop();
+    const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabaseClient.storage.from('product-images').upload(path, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+    if (error) throw error;
+    const { data } = supabaseClient.storage.from('product-images').getPublicUrl(path);
+    return data.publicUrl;
   }
 };
 

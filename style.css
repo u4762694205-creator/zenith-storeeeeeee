@@ -363,7 +363,8 @@ main > section { padding: 6rem 1.5rem; max-width: 1200px; margin: 0 auto; }
   display: flex; align-items: center; justify-content: center;
   font-size: 2.4rem; color: var(--text); position: relative; overflow: hidden;
 }
-.product-media img { width: 100%; height: 100%; object-fit: cover; }
+.product-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.product-card:hover .product-media img { transform: scale(1.06); }
 .product-media::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.14), transparent 55%); }
 
 .product-badge {

@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    /* Modale connexion client (interface uniquement, séparée du staff) */
+    /* Modale connexion client — VRAIS comptes (Google, Discord, e-mail) via Supabase */
     const authOverlay = document.getElementById('authOverlay');
     const openAuthBtn = document.getElementById('openAuthBtn');
     const openAuthBtnMobile = document.getElementById('openAuthBtnMobile');
@@ -269,7 +269,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const authSwitchBtn = document.getElementById('authSwitchBtn');
     const authTogglePass = document.getElementById('authTogglePass');
     const authPassword = document.getElementById('authPassword');
+    const authEmail = document.getElementById('authEmail');
+    const authGoogleBtn = document.querySelector('.btn-google');
+    const authDiscordBtn = document.querySelector('.btn-discord');
     let isSignupMode = false;
+
     function openAuth() { authOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
     function closeAuth() { authOverlay.classList.remove('open'); document.body.style.overflow = ''; }
     function setAuthMode(signup) {
@@ -281,8 +285,42 @@ document.addEventListener('DOMContentLoaded', async () => {
       authSwitchBtn.setAttribute('data-i18n', signup ? 'auth_switch_to_login_btn' : 'auth_switch_to_signup_btn');
       I18n.apply();
     }
-    openAuthBtn.addEventListener('click', () => { setAuthMode(false); openAuth(); });
-    openAuthBtnMobile.addEventListener('click', () => { burger.classList.remove('open'); mobileMenu.classList.remove('open'); setAuthMode(false); openAuth(); });
+
+    /* Reflète l'état connecté sur le bouton "Connexion" de la navbar */
+    async function refreshAccountUI() {
+      const session = await DataLayer.getSession();
+      [openAuthBtn, openAuthBtnMobile].forEach(btn => {
+        if (!btn) return;
+        if (session) {
+          btn.textContent = I18n.current === 'fr' ? 'Mon compte ▾' : 'My account ▾';
+          btn.dataset.loggedIn = 'true';
+        } else {
+          btn.removeAttribute('data-i18n-skip');
+          btn.setAttribute('data-i18n', 'nav_login');
+          btn.dataset.loggedIn = 'false';
+          I18n.apply();
+        }
+      });
+    }
+    refreshAccountUI();
+    DataLayer.onAuthChange(() => refreshAccountUI());
+
+    function openAccountOrAuth(btn) {
+      if (btn.dataset.loggedIn === 'true') {
+        if (confirm(I18n.current === 'fr' ? 'Se déconnecter ?' : 'Log out?')) {
+          DataLayer.staffLogout().then(refreshAccountUI);
+        }
+      } else {
+        setAuthMode(false);
+        openAuth();
+      }
+    }
+
+    openAuthBtn.addEventListener('click', () => openAccountOrAuth(openAuthBtn));
+    openAuthBtnMobile.addEventListener('click', () => {
+      burger.classList.remove('open'); mobileMenu.classList.remove('open');
+      openAccountOrAuth(openAuthBtnMobile);
+    });
     authClose.addEventListener('click', closeAuth);
     authOverlay.addEventListener('click', (e) => { if (e.target === authOverlay) closeAuth(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && authOverlay.classList.contains('open')) closeAuth(); });
@@ -292,12 +330,37 @@ document.addEventListener('DOMContentLoaded', async () => {
       authPassword.type = isPassword ? 'text' : 'password';
       authTogglePass.innerHTML = isPassword ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
     });
-    authForm.addEventListener('submit', (e) => {
+
+    authGoogleBtn.addEventListener('click', async () => {
+      try { await DataLayer.signInWithProvider('google'); }
+      catch (err) { alert('Erreur : ' + err.message); }
+    });
+    authDiscordBtn.addEventListener('click', async () => {
+      try { await DataLayer.signInWithProvider('discord'); }
+      catch (err) { alert('Erreur : ' + err.message); }
+    });
+
+    authForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      alert(I18n.current === 'fr'
-        ? "Interface de connexion cliente prête ✅\n(Séparée de l'espace Staff, qui lui est déjà connecté à une vraie base de données.)"
-        : "Customer login UI ready ✅\n(Separate from the Staff area, which is already wired to a real database.)");
-      closeAuth();
+      const submitBtn = authSubmit;
+      submitBtn.disabled = true;
+      try {
+        if (isSignupMode) {
+          await DataLayer.customerSignUp(authEmail.value.trim(), authPassword.value);
+          alert(I18n.current === 'fr'
+            ? "Compte créé ! Vérifie ta boîte mail pour confirmer ton adresse si demandé, puis reconnecte-toi."
+            : "Account created! Check your inbox to confirm your email if asked, then log in.");
+          setAuthMode(false);
+        } else {
+          await DataLayer.customerSignIn(authEmail.value.trim(), authPassword.value);
+          closeAuth();
+          refreshAccountUI();
+        }
+      } catch (err) {
+        alert('Erreur : ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
 
     /* Ciel étoilé */
