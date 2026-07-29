@@ -185,13 +185,21 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         await DataLayer.updateProduct(id, { in_stock: !product.inStock });
         toast(!product.inStock ? 'Produit remis en stock' : 'Produit marqué en rupture');
-      } catch (err) { toast("Erreur : " + err.message, true); }
+      } catch (err) {
+        console.error('Erreur changement stock :', err);
+        const details = [err.message, err.details, err.hint, err.code].filter(Boolean).join('\n');
+        alert('❌ Échec du changement de stock.\n\nDétail :\n' + details);
+      }
     } else if (action === 'edit') {
       openProductModal(product);
     } else if (action === 'delete') {
       if (confirm(`Supprimer "${product.name}" ?`)) {
         try { await DataLayer.deleteProduct(id); toast('Produit supprimé'); }
-        catch (err) { toast("Erreur : " + err.message, true); }
+        catch (err) {
+          console.error('Erreur suppression :', err);
+          const details = [err.message, err.details, err.hint, err.code].filter(Boolean).join('\n');
+          alert('❌ Échec de la suppression.\n\nDétail :\n' + details);
+        }
       }
     }
   });
@@ -280,9 +288,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (editingProductId) await DataLayer.updateProduct(editingProductId, productData);
       else await DataLayer.addProduct(productData);
       closeProductModal();
-      toast('Produit enregistré — visible par tous les visiteurs');
+      alert('✅ Produit enregistré avec succès !');
     } catch (err) {
-      toast("Erreur : " + err.message, true);
+      console.error('Erreur enregistrement produit :', err);
+      const details = [err.message, err.details, err.hint, err.code].filter(Boolean).join('\n');
+      alert('❌ Le produit n\'a PAS été enregistré.\n\nDétail de l\'erreur :\n' + details);
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalLabel;
